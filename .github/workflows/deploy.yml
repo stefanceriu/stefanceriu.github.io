@@ -1,0 +1,58 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # The official image already carries the exact toolchain the wasm SDK is
+    # pinned to, so there is no swiftly install step here.
+    container: swift:6.3.3
+    steps:
+      - uses: actions/checkout@v7
+
+      # wasm-opt roughly halves the module; without it the plugin warns and
+      # ships the unoptimised build.
+      - name: Install binaryen
+        run: apt-get update && apt-get install -y binaryen
+
+      - name: Install the WebAssembly SDK
+        run: |
+          swift sdk install \
+            https://download.swift.org/swift-6.3.3-release/wasm-sdk/swift-6.3.3-RELEASE/swift-6.3.3-RELEASE_wasm.artifactbundle.tar.gz \
+            --checksum cabfa08b73bb8ac783927ecd15fa386e99d0c139c5f232445067bcf58379cae7
+
+      - uses: actions/cache@v6
+        with:
+          path: .build
+          key: build-${{ runner.os }}-${{ hashFiles('Package.resolved', 'Sources/**') }}
+          restore-keys: build-${{ runner.os }}-
+
+      - name: Build
+        run: ./build.sh release
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

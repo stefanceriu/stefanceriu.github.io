@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stefan Ceriu</title>
+<meta name="description" content="Building open-source tools for a private, decentralised internet.">
+<link rel="stylesheet" href="./board.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%23de301e'/%3E%3C/svg%3E">
+
+<!-- The shell paints the first cell immediately. Swift, once the wasm module
+     is up, replaces #app with the whole board. Without it the page is white
+     for as long as the module takes to arrive. -->
+<div id="app">
+  <div class="board">
+    <div class="cell head">
+      <h1>Stefan <em>Ceriu</em></h1>
+      <span class="label">iOS &amp; Rust Engineer · Tech Lead at Element</span>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { init } from "./Package/index.js";
+  init();
+</script>
