@@ -211,12 +211,15 @@ a:hover, a:focus-visible { color: var(--accent); }
   display: flex;
   flex-direction: column;
   min-height: 0;
+  /* the chart may run short, but it may never bleed into the list below it */
+  overflow: hidden;
 }
 
 .share {
   position: relative;
   flex: 1;
-  min-height: 80px;
+  /* small enough that the axis under it always has room in a short cell */
+  min-height: 56px;
   display: flex;
 }
 
@@ -537,7 +540,10 @@ a:hover, a:focus-visible { color: var(--accent); }
 .cell.say .column {
   margin-top: 10px;
   /* below this the rail has no room to exist between its marks */
-  min-height: 112px;
+  min-height: 96px;
+  /* four and a half roles: a row is ~50px and the wall pads 10px top and
+     bottom. The viewport bound keeps it sane on a short phone. */
+  max-height: min(245px, 40vh);
 }
 
 .cell.say .steps {
@@ -577,7 +583,10 @@ a:hover, a:focus-visible { color: var(--accent); }
 @media (min-width: 1080px) and (min-height: 720px) {
   .board {
     height: calc(100dvh - 36px);
-    grid-template-rows: auto minmax(0, 1.7fr) minmax(0, 1fr) auto;
+    /* Row two takes only what its content needs, so the career column capping
+       at four and a half roles leaves no dead space under it; the charts row
+       takes the rest, with a floor that keeps the axis clear of the list. */
+    grid-template-rows: auto auto minmax(236px, 1fr) auto;
   }
 }
 
@@ -591,7 +600,12 @@ a:hover, a:focus-visible { color: var(--accent); }
     border-bottom: var(--rule) solid var(--ink);
   }
   .cell.graphs { border-bottom: 0; }
-  .cell.say .column { max-height: 40vh; }
+  /* Stacked, the cells size to their content, so both lists would run to full
+     length and take the rail with them. Capped, they scroll inside the board
+     the way they do on one screen. */
+  .cell.chart .column {
+    max-height: 40vh;
+  }
 }
 
 @media (max-width: 620px) {
