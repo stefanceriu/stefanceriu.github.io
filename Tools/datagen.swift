@@ -7,6 +7,9 @@
 // ever sees plain arrays.
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 let handle = "stefanceriu"
 let firstYear = 2008
